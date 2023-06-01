@@ -4,12 +4,15 @@ spec:
   volumes:
   - name: shared-data
     emptyDir: {}
+    #volume of pod for pipe task must be of emptyDir tpe.
   initContainers:
     - name: init
       image: busybox
       command: [ "/bin/sh", "-c" ]
       args:
         - wget -O /tmp/index.html 'http://cowsay.morecode.org/say?message=Good+things+come+when+you+least+expect+them&format=html'
+        #the file will be stored at /tmp/index.html on the pipe-pod.  File generator is cowsay to test this.
       volumeMounts:
         - name: shared-data
           mountPath: /tmp
+          #downloaded file will be saved in this emptyDir volume

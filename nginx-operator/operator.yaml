@@ -1,6 +1,7 @@
 apiVersion: kudo.dev/v1beta1
 name: "nginx-operator"
-operatorVersion: "0.1.9"
+operatorVersion: "0.1.2"
+# change this version to 0.1.2 after add the pipe-pod changes.
 appVersion: "1.21.4"
 kubernetesVersion: 1.21.7
 maintainers:
@@ -17,21 +18,26 @@ tasks:
         - configmap.yaml
   - name: assets
     kind: Pipe
-    # this defines the pipe task that will instantiate and run the pipe-pod with the emtypDir
+    # this defines the pipe task that will instantiate and run the pipe-pod with the emptyDir
     spec:
       pod: pipe-pod.yaml
+      # this yaml will define a pod that will run an emptyDir file mount for piping in files
       pipe:
         - file: /tmp/index.html
+        # the file that is fetched will be this index.html file.
           kind: ConfigMap
           key: indexHtml
+          #this pipe is referenced in the deployment.yaml file
 plans:
   deploy:
     strategy: serial
     phases:
       - name: main
         strategy: serial
+        # one step at a time.
         steps:
           - name: genfiles
+          # the file needs to be available before the  nginx container starts
             tasks:
               - assets
           - name: deploy

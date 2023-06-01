@@ -25,6 +25,8 @@ spec:
           subPath: nginx.conf
         - name: www
           mountPath: /usr/share/nginx/html/
+          #path on the nginx container for the shared data that is piped in from pipe-pod
+          # this is where nginx actually serves its files and this will be the index.html file.
       volumes:
       - name: config-volume
         configMap:
@@ -32,3 +34,6 @@ spec:
       - name: www
         configMap:
           name: {{ .Pipes.indexHtml }}
+          # this is a dynamic configMap
+          # key in the pipe of the operator.yaml file is indexHtml
+          # the pipe-pod will pipe in data to this volume of the nginix container
